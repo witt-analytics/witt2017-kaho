@@ -11,14 +11,26 @@ Data <- data2[data3]
 
 colnames(Data) <- paste0('col', 1:ncol(Data))
 
-colnames(Data)[c(1,26:31,65)] <- c('Foreign Key',
+colnames(Data)[c(1,26:32,65)] <- c('Foreign Key',
                                  'first symptom date',
                                  'first symptom diff',
                                  'first dr appt date',
                                  'diff first symptom diagnose',
                                  'date of diagnosis',
                                  'age of diagnosis',
+                                 'type of diagnosis',
                                  'date of birth')
+
+## Clean up type of diagnosis as 1's & 0's
+
+diagnose <- c('Clinical diagnosis by physician based on symptoms',
+              'Clinical diagnosis by physician based on family history',
+              'Diagnosis by healthcare professional other than a physician')
+
+DIAG <- sapply(X = 1:nrow(Data),
+               FUN = function(x) {
+                 `if`(Data$`type of diagnosis`[x]%in% diagnose,1,0)
+               })
 
 # We need the ages, but must first convert to 
 # Numeric values
@@ -40,11 +52,12 @@ ages <-
 
 date.frame <- 
   data.frame(p.id = Data$`Foreign Key`,
-             dob = as.Date(Data$`date of birth`, '%m/%d/%Y'),
+             dob  = as.Date(Data$`date of birth`, '%m/%d/%Y'),
              symp = as.Date(Data$`first symptom date`, '%m/%d/%Y'),
              doct = as.Date(Data$`first dr appt date`, '%m/%d/%Y'),
              diag = as.Date(Data$`date of diagnosis`, '%m/%d/%Y'),
              ages = ages,
+             type = DIAG,
              stringsAsFactors = F)
 
 # Check for errors in the dates
