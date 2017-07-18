@@ -1,4 +1,7 @@
-needs::needs(readxl, magrittr, qdap, survival, fitdistrplus, data.table)
+pkgs = list('readxl', 'magrittr', 'qdap', 'survival', 'fitdistrplus', 'data.table')
+lapply(X = 1:length(pkgs),
+       FUN = function(x) do.call('library', args = list(pkgs[x], quietly = T)))
+
 
 file <- 'Shelby_K_Data.xlsx'
 
@@ -114,7 +117,11 @@ diff <- celiac$diag-celiac$symp
 
 ## histogram of differences
 
-hist(as.numeric(diff))
+hist(as.numeric(diff),
+     breaks = 100,
+     las = 1, 
+     col = 'steelblue', 
+     border = 'white')
 
 symp_diff <- Date_diag - Date_symp
 doct_diff <- Date_doct - Date_symp
