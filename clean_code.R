@@ -138,22 +138,48 @@ lweib <- fitdist(diff, distr = 'weibull')
 
 ## loglogistic
 dllogis <- actuar::dllogis
+pllogis <- actuar::pllogis
 
 llog <- fitdist(diff, distr = 'llogis')
 
 ## CREATE TABLE OF RESULTS
 
-llike <- c(lnorm$loglik, lweib$loglik, llog$loglik)
-aic   <- c(lnorm$aic,    lweib$aic,    llog$aic)
-bic   <- c(lnorm$bic,    lweib$bic,    llog$bic)
+llike <- c(lnorm$loglik,      lweib$loglik, llog$loglik)
+aic   <- c(lnorm$aic,         lweib$aic,    llog$aic)
+bic   <- c(lnorm$bic,         lweib$bic,    llog$bic)
 parm1 <- c(lnorm$estimate[1], lweib$est[1], llog$est[1])
 parm2 <- c(lnorm$estimate[2], lweib$est[2], llog$est[2])
-sdp1  <- c(lnorm$sd[1], lweib$sd[1], llog$sd[1])
-sdp2  <- c(lnorm$sd[2], lweib$sd[2], llog$sd[2])
+sdp1  <- c(lnorm$sd[1],       lweib$sd[1],  llog$sd[1])
+sdp2  <- c(lnorm$sd[2],       lweib$sd[2],  llog$sd[2])
 
 result <- data.frame(llike, aic, bic, parm1, parm2, sdp1, sdp2)
 
-
+hist(diff, 
+     breaks = 50, 
+     las = 1, 
+     col = 'steelblue', 
+     border = 'white',
+     probability = T)
+curve(dweibull(x, lweib$est[1], lweib$est[2]), 
+      xlim = c(0.001,25000),
+      col = 'red',
+      lwd = 2, 
+      add = T)
+curve(dllogis(x, llog$est[1], llog$est[2]), 
+      xlim = c(0.001,25000),
+      col = 'green',
+      lwd = 2, 
+      add = T)
+curve(dlnorm(x, lnorm$est[1], lnorm$est[2]), 
+      xlim = c(0.001,25000),
+      col = 'orange',
+      lwd = 2, 
+      add = T)
+legend('topright',
+       legend = c('Weibull','Loglogistic','Lognormal'),
+       col = c('red','green','orange'),
+       lwd = 2,
+       bty = 'n')
 
 
 
