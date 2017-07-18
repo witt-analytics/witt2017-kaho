@@ -84,10 +84,18 @@ cens <- which(is.na(date.frame$symp))
 date.frame$symp[cens] = date.frame$doct[cens]
 date.frame$censor[cens] = 'left'
 
+cens2 <- sapply(X = 1:nrow(date.frame),
+                   FUN = function(x) {
+                     `if`(date.frame$type[x]==0,
+                          'right',
+                          date.frame$censor[x])
+                      })
+date.frame$censor <- cens2
+
 # Check patient records for erroneous dates 
 # If diagnosis is before symptom that is wrong
 
-bad <- date.frame[,3] > date.frame[,5] & date.frame[,4] < date.frame[,5]
+bad <- date.frame[,3] > date.frame[,5] 
 
 date.frame %<>% subset(!bad)
 
@@ -97,6 +105,16 @@ diff <- sapply(X = 1:nrow(date.frame),
                       date.frame$diag[x] - date.frame$dob[x],
                       date.frame$diag[x] - date.frame$symp[x])
                })
+
+
+## subset patients who have been diagnosed
+celiac <- subset(date.frame, type==1)
+
+diff <- celiac$diag-celiac$symp
+
+## histogram of differences
+
+hist(as.numeric(diff))
 
 symp_diff <- Date_diag - Date_symp
 doct_diff <- Date_doct - Date_symp
