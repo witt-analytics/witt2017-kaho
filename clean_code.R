@@ -2,7 +2,6 @@ pkgs = list('readxl', 'magrittr', 'qdap', 'survival', 'fitdistrplus', 'data.tabl
 lapply(X = 1:length(pkgs),
        FUN = function(x) do.call('library', args = list(pkgs[x], quietly = T)))
 
-
 file <- 'Shelby_K_Data.xlsx'
 
 data2 <- data.table(read_excel(file, sheet = 2), key = 'Foreign Key')
@@ -12,17 +11,19 @@ data3 <- data.table(read_excel(file, sheet = 3), key = 'Foreign Key')
 
 Data <- data2[data3]
 
+#save('Data', file = 'shelby.rda', compression_level = 9, compress = T)
+
 colnames(Data) <- paste0('col', 1:ncol(Data))
 
 colnames(Data)[c(1,26:32,65)] <- c('Foreign Key',
-                                 'first symptom date',
-                                 'first symptom diff',
-                                 'first dr appt date',
-                                 'diff first symptom diagnose',
-                                 'date of diagnosis',
-                                 'age of diagnosis',
-                                 'type of diagnosis',
-                                 'date of birth')
+                                   'first symptom date',
+                                   'first symptom diff',
+                                   'first dr appt date',
+                                   'diff first symptom diagnose',
+                                   'date of diagnosis',
+                                   'age of diagnosis',
+                                   'type of diagnosis',
+                                   'date of birth')
 
 ## Clean up type of diagnosis as 1's & 0's
 
@@ -122,6 +123,18 @@ hist(as.numeric(diff),
      las = 1, 
      col = 'steelblue', 
      border = 'white')
+
+## lognormal dist
+
+lnorm <- fitdist(diff, distr = 'lnorm')
+
+## exponential dist
+
+exp <- fitdist(diff, distr = 'exp')
+
+## Weibull dist
+
+lnorm <- fitdist(diff, distr = 'lnorm')
 
 symp_diff <- Date_diag - Date_symp
 doct_diff <- Date_doct - Date_symp
