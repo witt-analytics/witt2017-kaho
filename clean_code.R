@@ -11,13 +11,14 @@ Data <- data2[data3]
 
 colnames(Data) <- paste0('col', 1:ncol(Data))
 
-colnames(Data)[c(1,26:31)] <- c('Foreign Key',
+colnames(Data)[c(1,26:31,65)] <- c('Foreign Key',
                                  'first symptom date',
                                  'first symptom diff',
                                  'first dr appt date',
                                  'diff first symptom diagnose',
                                  'date of diagnosis',
-                                 'age of diagnosis')
+                                 'age of diagnosis',
+                                 'date of birth')
 
 # We need the ages, but must first convert to 
 # Numeric values
@@ -38,7 +39,8 @@ ages <-
 #data2 %<>% subset(!is.na(`date of diagnosis`))
 
 date.frame <- 
-  data.frame(p.id = Data$`Foreign Key`, 
+  data.frame(p.id = Data$`Foreign Key`,
+             dob = as.Date(Data$`date of birth`, '%m/%d/%Y'),
              symp = as.Date(Data$`first symptom date`, '%m/%d/%Y'),
              doct = as.Date(Data$`first dr appt date`, '%m/%d/%Y'),
              diag = as.Date(Data$`date of diagnosis`, '%m/%d/%Y'),
@@ -49,7 +51,7 @@ date.frame <-
 # If a patient's record includes multiple
 # NA dates - remove the record from the data
 
-multi.na <- by(date.frame[,2:4],
+multi.na <- by(date.frame[,3:5],
                date.frame[,1],
                FUN = function(x) sum(is.na(x)) > 1)
 
@@ -59,20 +61,29 @@ date.frame %<>% subset(!multi.na)
 #
 # If symptom date is missing set
 # symptom_date == doctor_date
-# However this is a left-truncated observation
-# So we need to add a column for truncation
+# However this is a left-censored observation
+# So we need to add a column for censoring
 
-date.frame$truncation = 'none'
+date.frame$censor = 'none'
 
-trunc <- which(is.na(date.frame$symp))
+cens <- which(is.na(date.frame$symp))
 
-date.frame$symp[trunc] = date.frame$doct[trunc]
-date.frame$truncation[trunc] = 'left'
+date.frame$symp[cens] = date.frame$doct[cens]
+date.frame$censor[cens] = 'left'
 
 # Check patient records for erroneous dates 
 # If diagnosis is before symptom that is wrong
 
-date.frame[,2] > date.frame[,4] & date.frame[,3] < date.frame[,4]
+bad <- date.frame[,3] > date.frame[,5] & date.frame[,4] < date.frame[,5]
+
+date.frame %<>% subset(!bad)
+
+diff <- sapply(X = 1:nrow(date.frame),
+               FUN = function(x) {
+                 `if`(date.frame$censor[x]=='left',
+                      date.frame$diag[x] - date.frame$dob[x],
+                      date.frame$diag[x] - date.frame$symp[x])
+               })
 
 symp_diff <- Date_diag - Date_symp
 doct_diff <- Date_doct - Date_symp
