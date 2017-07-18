@@ -212,8 +212,10 @@ legend('bottomright',
        bty = 'n')
 
 
-
-
+celiac$diff <- diff
+model <- lm(diff^0.275 ~ ages, data = celiac)
+summary(model)
+plot(model)
 
 
 
@@ -221,11 +223,6 @@ legend('bottomright',
 symp_diff <- Date_diag - Date_symp
 doct_diff <- Date_doct - Date_symp
 diag_diff <- Date_diag - Date_doct
-
-
-
-
-
 
 
 good_data <- shelb_na[Patients,]
