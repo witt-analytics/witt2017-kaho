@@ -132,6 +132,11 @@ diff <- as.numeric(diff) + rnorm(n = length(diff), 0, sd = 0.00001)^2
 
 lnorm <- fitdist(as.numeric(diff), distr = 'lnorm')
 
+## normal dist
+pbisa <- teachingApps::pbisa
+dbisa <- teachingApps::dbisa
+ bisa <- fitdist(as.numeric(diff), distr = 'bisa', start = list(shape = 1, scale = 10))
+
 ## Weibull dist
 
 lweib <- fitdist(diff, distr = 'weibull')
@@ -165,7 +170,7 @@ curve(dweibull(x, lweib$est[1], lweib$est[2]),
       col = 'red',
       lwd = 2, 
       add = T)
-curve(dllogis(x, llog$est[1], llog$est[2]), 
+curve(dllogis(x, llog$est[1], 1/llog$est[2]), 
       xlim = c(0.001,25000),
       col = 'green',
       lwd = 2, 
@@ -190,7 +195,7 @@ curve(pweibull(x, lweib$est[1], lweib$est[2]),
       col = 'red',
       lwd = 2, 
       add = T)
-curve(pllogis(x, llog$est[1], llog$est[2]), 
+curve(pllogis(x, llog$est[1], 1/llog$est[2]), 
       xlim = c(0.001,25000),
       col = 'green',
       lwd = 2, 
