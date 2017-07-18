@@ -182,8 +182,29 @@ legend('topright',
        bty = 'n')
 
 
+## Plot 2
 
-
+plot(ecdf(diff), las = 1, xlim = c(0,25000))
+curve(pweibull(x, lweib$est[1], lweib$est[2]), 
+      xlim = c(0.001,25000),
+      col = 'red',
+      lwd = 2, 
+      add = T)
+curve(pllogis(x, llog$est[1], llog$est[2]), 
+      xlim = c(0.001,25000),
+      col = 'green',
+      lwd = 2, 
+      add = T)
+curve(plnorm(x, lnorm$est[1], lnorm$est[2]), 
+      xlim = c(0.001,25000),
+      col = 'orange',
+      lwd = 2, 
+      add = T)
+legend('bottomright',
+       legend = c('Weibull','Loglogistic','Lognormal'),
+       col = c('red','green','orange'),
+       lwd = 2,
+       bty = 'n')
 
 
 
