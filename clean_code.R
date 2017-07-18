@@ -124,17 +124,47 @@ hist(as.numeric(diff),
      col = 'steelblue', 
      border = 'white')
 
+## MAXIMUM LIKELIHOOD ESTIMATION
+
+diff <- as.numeric(diff) + rnorm(n = length(diff), 0, sd = 0.00001)^2
+
 ## lognormal dist
 
-lnorm <- fitdist(diff, distr = 'lnorm')
-
-## exponential dist
-
-exp <- fitdist(diff, distr = 'exp')
+lnorm <- fitdist(as.numeric(diff), distr = 'lnorm')
 
 ## Weibull dist
 
-lnorm <- fitdist(diff, distr = 'lnorm')
+lweib <- fitdist(diff, distr = 'weibull')
+
+## loglogistic
+dllogis <- actuar::dllogis
+
+llog <- fitdist(diff, distr = 'llogis')
+
+## CREATE TABLE OF RESULTS
+
+llike <- c(lnorm$loglik, lweib$loglik, llog$loglik)
+aic   <- c(lnorm$aic,    lweib$aic,    llog$aic)
+bic   <- c(lnorm$bic,    lweib$bic,    llog$bic)
+parm1 <- c(lnorm$estimate[1], lweib$est[1], llog$est[1])
+parm2 <- c(lnorm$estimate[2], lweib$est[2], llog$est[2])
+sdp1  <- c(lnorm$sd[1], lweib$sd[1], llog$sd[1])
+sdp2  <- c(lnorm$sd[2], lweib$sd[2], llog$sd[2])
+
+result <- data.frame(llike, aic, bic, parm1, parm2, sdp1, sdp2)
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 symp_diff <- Date_diag - Date_symp
 doct_diff <- Date_doct - Date_symp
